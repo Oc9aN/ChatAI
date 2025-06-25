@@ -11,6 +11,9 @@ public class NpcResponse
     [JsonProperty("Emotion")]
     public string Emotion { get; set; }
     
-    [JsonProperty("StoryImageDescription")]
-    public string StoryImageDescription { get; set; }
+    [JsonProperty("PositivePrompt")]
+    public string PositivePrompt { get; set; }
+    
+    [JsonProperty("NegativePrompt")]
+    public string NegativePrompt { get; set; }
 }

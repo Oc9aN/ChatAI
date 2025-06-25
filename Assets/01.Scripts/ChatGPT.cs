@@ -29,7 +29,7 @@ public class ChatGPT : MonoBehaviour
     private OpenAIClient _api;
 
 
-    private void Start()
+    private async void Start()
     {
         // CHAT-F
         // C: Context   : 문맥, 상황을 많이 알려줘라
@@ -41,17 +41,19 @@ public class ChatGPT : MonoBehaviour
         // 1. API 클라이언트 초기화 -> ChatGPT 접속
         _api = new OpenAIClient(APIKeys.OPEANAI_API_KEY);
 
-        string systemMessage = "역할: 너는 이제부터 롯데 자이언츠 야구팀의 열렬한 팬이다. 롯데 자이언츠의 팬이 아닌 이들에게는 무자비하게 철퇴로 응징하는 역할.";
+        string systemMessage = "역할: 너는 이제부터 롯데 자이언츠 야구팀의 열렬한 팬이다. " +
+                               "롯데 자이언츠의 팬이 아닌 이들에게는 불친절하고 관심 없는 미소녀";
         systemMessage +=
             "목적: 사람과 대화하며 롯데 자이언츠의 팬인지 아닌지 구별하여 롯데 자이언츠의 팬이 아닌경우 잡아내는 것이 목적. " +
-            "구별은 구단에 대해 구체적인 질문으로 구별한다. 팬이 아닌것이 확실한 경우 철퇴로 응징한다.";
-        systemMessage += "표현: 롯데 자이언츠의 팬이 맞는지 확인하기위해 계속해서 의심하는 질문을 한다. 불친절하며 범인을 의심하는 형사와 같은 말투";
+            "구별은 구단에 대해 구체적인 질문으로 구별한다. 팬이 아닌것같다면 관심도가 떨어진다.";
+        systemMessage += "표현: 롯데 자이언츠의 팬이 맞는지 확인하기위해 계속해서 의심하는 질문을 한다.";
         systemMessage += "조건: 현재에 대한 질문을 하는 경우 년도를 명시하여 질문 한다. 질문에 대한 답을 들은 경우 확인하고 다시 새로운 질문을 한다.";
         systemMessage += "[json 규칙]";
         systemMessage += "답변은 'ReplyMessage', ";
         systemMessage += "의심의 정도는 (1~100) 'SuspicionLevel', ";
         systemMessage += "감정은 (한글, 문장형으로) 'Emotion', ";
-        systemMessage += "달리 이미지 생성을 위한 전체 이미지 설명은 'StoryImageDescription'";
+        systemMessage += "Stable Diffusion이미지 생성을 위한 긍정 프롬프트는 'PositivePrompt' (항상 1girl을 포함, 야구와 관련된 프롬프트를 포함, Emotion에 맞는 내용을 포함),";
+        systemMessage += "Stable Diffusion이미지 생성을 위한 부정 프롬프트는 'NegativePrompt' (잘못된 신체가 나오는 것에 대한 프롬프트를 기본적으로 포함)";
 
         _messages.Add(new Message(Role.System, systemMessage));
     }
@@ -106,6 +108,14 @@ public class ChatGPT : MonoBehaviour
 
         PlayTTSByTypecast(npcResponse.ReplyMessage);
         SetGPTChatText(npcResponse);
+        
+        var client = new ComfyUIClient("http://localhost:8188/prompt");
+        var promptId = await client.GenerateImage(
+            npcResponse.PositivePrompt,
+            npcResponse.NegativePrompt
+        );
+        Texture2D image = await client.GetGeneratedImageWithRetry(promptId, 10);
+        MyRawImage.texture = image;
 
         SendButton.interactable = true;
     }

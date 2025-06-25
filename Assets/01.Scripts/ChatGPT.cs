@@ -48,11 +48,13 @@ public class ChatGPT : MonoBehaviour
         systemMessage += "[json 규칙]";
         systemMessage += "답변은 'ReplyMessage', ";
         systemMessage += "의심의 정도는 (1~100) 'SuspicionLevel', ";
-        systemMessage += "감정은 (한글, 문장형으로) 'Emotion', ";
+        systemMessage += "감정은 (한글, 서술형으로) 'Emotion', ";
         systemMessage += "Stable Diffusion이미지 생성을 위한 긍정 프롬프트는 'PositivePrompt' (항상 1girl을 포함, 야구와 관련된 프롬프트를 포함, Emotion에 맞는 내용을 포함),";
         systemMessage += "Stable Diffusion이미지 생성을 위한 부정 프롬프트는 'NegativePrompt' (잘못된 신체가 나오는 것에 대한 프롬프트를 기본적으로 포함)";
 
         _messages.Add(new Message(Role.System, systemMessage));
+
+        Chat("롯데 팬인지 아닌지 구별을 시작해줘");
     }
 
     private void Update()
@@ -74,12 +76,17 @@ public class ChatGPT : MonoBehaviour
         
         SetUserChatText(prompt);
 
+        Chat(prompt);
+    }
+    
+    private async void Chat(string message)
+    {
         SendButton.interactable = false;
 
         PromptField.text = string.Empty;
 
         // 2. 메시지 작성 후 메시지's 리스트에 추가
-        Message promptMessage = new Message(Role.User, prompt);
+        Message promptMessage = new Message(Role.User, message);
         _messages.Add(promptMessage);
 
         // 3. 메시지 보내기

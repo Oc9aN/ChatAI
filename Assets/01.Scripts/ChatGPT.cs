@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,12 +6,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using OpenAI;
-using OpenAI.Audio;
 using OpenAI.Chat;
 using OpenAI.Images;
 using OpenAI.Models;
 using UnityEngine.Networking;
-using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 
 public class ChatGPT : MonoBehaviour

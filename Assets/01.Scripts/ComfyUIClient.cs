@@ -17,6 +17,7 @@ public class ComfyUIClient
         this.endpoint = generateEndpoint;
     }
 
+    // TODO : 특정 워크플로우 JSON을 받아 프롬프트만 수정하게 변경
     public async Task<string> GenerateImage(string positivePrompt, string negativePrompt)
     {
         var prompt = new Dictionary<string, object>();
